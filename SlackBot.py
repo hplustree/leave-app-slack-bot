@@ -28,19 +28,19 @@ DHARMESH_ID= constant.DHARMESH_ID
 presentday = date.today() 
 currentYear = presentday.year
 
-announcement_id=[19,20]
+announcement_id=[]
 
 # Leave time
-leaveTime = time(hour=11, minute=31)  #TODO Change to Schedule time
+leaveTime = time(hour=18, minute=00)  #TODO Change to Schedule time
 leaveScheduleTime = int(datetime.combine(presentday, leaveTime).timestamp())
 
 # BirthDay time
-birthdayTime = time(hour=11,minute=31) #TODO Change to Schedule time
+birthdayTime = time(hour=11,minute=00) #TODO Change to Schedule time
 birthdayScheduleTime = int(datetime.combine(presentday, birthdayTime).timestamp())
 
 
 # Work Anniversary time
-workAnniversaryTime = time(hour=11,minute=31) #TODO Change to Schedule time
+workAnniversaryTime = time(hour=11,minute=00) #TODO Change to Schedule time
 workAnniversaryScheduleTime = int(datetime.combine(presentday, workAnniversaryTime).timestamp())
 
 
@@ -174,4 +174,4 @@ while True:
     # Checks whether a scheduled task
     # is pending to run or not
     schedule.run_pending()
-    tm.sleep(1)
+    tm.sleep(60)

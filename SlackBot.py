@@ -31,16 +31,16 @@ currentYear = presentday.year
 announcement_id=[]
 
 # Leave time
-leaveTime = time(hour=18, minute=00)  #TODO Change to Schedule time
+leaveTime = time(hour=18, minute=00)
 leaveScheduleTime = int(datetime.combine(presentday, leaveTime).timestamp())
 
 # BirthDay time
-birthdayTime = time(hour=11,minute=00) #TODO Change to Schedule time
+birthdayTime = time(hour=11,minute=00)
 birthdayScheduleTime = int(datetime.combine(presentday, birthdayTime).timestamp())
 
 
 # Work Anniversary time
-workAnniversaryTime = time(hour=11,minute=00) #TODO Change to Schedule time
+workAnniversaryTime = time(hour=11,minute=00)
 workAnniversaryScheduleTime = int(datetime.combine(presentday, workAnniversaryTime).timestamp())
 
 
@@ -151,7 +151,7 @@ def work_anniversary_schedule_message():
         client.chat_scheduleMessage(channel=GENERAL_CHANNEL,post_at=workAnniversaryScheduleTime,text=workAnniversaryWish(result['name'],totalYear))
 
 def announcement_schedule_message():
-    response = requests.get(f'{LEAVE_API}/slack-bot/announcement-request')
+    response = requests.get(f'{LEAVE_API}/slack-bot/announcement-request?token={API_KEY}')
     myresult = response.json();
     announcementScheduleTime = int((datetime.now() + timedelta(minutes=2)).timestamp())
     for result in myresult:

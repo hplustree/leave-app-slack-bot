@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 logger = logging.getLogger(__name__)
 env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path)
-users_store = {}
+
 client = slack_sdk.WebClient(token=os.environ['SLACK_TOKEN'])
 
 # Put users into the dict
@@ -22,9 +22,9 @@ def save_users(users_array):
 try:
     # Call the users.list method using the WebClient
     # users.list requires the users:read scope
+    users_store = {}
     result = client.users_list()
     save_users(result["members"])
-    print(users_store)
 
 except SlackApiError as e:
     logger.error("Error creating conversation {}",format(e))

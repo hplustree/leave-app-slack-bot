@@ -93,7 +93,7 @@ def halfdayLeave(name,start_date,end_date,reason,half_leave_time):
     if(start_date==end_date):
         return f"This is to inform you that, {f'<@{user_id[name]}>' if name in user_id else name} will be taking half-day leave on {start_date} [{findDay(start_date)}].\n Half-day Time:- {half_leave_time} \n Reason:- {reason} \n <!here> <@{BARKHA_ID}> <@{DHARMESH_ID}>"
     else:
-        return f"This is to inform you that, {f'<@{user_id[name]}>' if name in user_id else name} will be taking half-day leave on {start_date} [{findDay(start_date)}] to {end_date} [{findDay(end_date)}].\n Reason:- {reason} \n <!here> <@{BARKHA_ID}> <@{DHARMESH_ID}>"
+        return f"This is to inform you that, {f'<@{user_id[name]}>' if name in user_id else name} will be taking half-day leave on {start_date} [{findDay(start_date)}] to {end_date} [{findDay(end_date)}].\n Half-day Time:- {half_leave_time} \n  Reason:- {reason} \n <!here> <@{BARKHA_ID}> <@{DHARMESH_ID}>"
 
 def birthdayWish(name):
     return f"<!channel> \n Today is {f'<@{user_id[name]}>' if name in user_id else name}'s birthday! \n From all of us here at the F(x), we wish you a very happy birthday & an  amazing year that ends with accomplishing all the great goals that you've set! \n May the days ahead be full of prosperity! \n \n Your contributions and commitment have made a significant impact on our success and we are grateful to have you as part of F(x) Team! \n Light the candles & uniquely enjoy this vital day using the fire of desires! Have a well deserved, thoroughly enjoyable birthday! \n Have a wonderful day! \n \n Once again, Happy Birthday! We look forward to continuing our work together and achieving more success in the future."

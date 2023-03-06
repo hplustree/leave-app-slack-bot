@@ -138,7 +138,6 @@ def leave_schedule_messages():
     except requests.exceptions.RequestException as err:
             return "An Unknown Error occurred" + repr(err)
     for result in myresult:
-        print(result)
         try:
             client.chat_scheduleMessage(channel=LEAVE_CHANNEL,post_at=leaveScheduleTime,text=f"Reminder:- \n{switchType(type=result['req_type_id'],result=result)}")
         except SlackApiError as e:

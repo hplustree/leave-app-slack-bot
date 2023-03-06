@@ -1,5 +1,6 @@
 import logging
 import slack_sdk
+from slack_sdk.errors import SlackApiError
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -10,10 +11,8 @@ import calendar
 import constant
 import time as tm
 from UserID import user_id
-from flask import Flask,request
 
 
-app = Flask(__name__)
 # Setup the env file and Log
 logger = logging.getLogger(__name__)
 env_path = Path('.') / '.env'
@@ -34,9 +33,12 @@ DHARMESH_ID= constant.DHARMESH_ID
 presentday = date.today() 
 currentYear = presentday.year
 
+# Leave time
+leaveTime = time(hour=12, minute=30)
+leaveScheduleTime = int(datetime.combine(presentday, leaveTime).timestamp())
 
 # BirthDay time
-birthdayTime = time(hour=18,minute=10)
+birthdayTime = time(hour=5,minute=30)
 birthdayScheduleTime = int(datetime.combine(presentday, birthdayTime).timestamp())
 
 # Work Anniversary time
@@ -123,6 +125,25 @@ def switchType(type,result):
     elif type==6:
         return altermateShift(name,start_date,end_date,reason,half_leave_time)
 
+def leave_schedule_messages():
+    try:
+        response = requests.get(f'{LEAVE_API}/slack-bot/leave-request?token={API_KEY}')
+        myresult =response.json()
+    except requests.exceptions.HTTPError as errh:
+            return "An Http Error occurred:" + repr(errh)
+    except requests.exceptions.ConnectionError as errc:
+        return "An Error Connecting to the API occurred:" + repr(errc)
+    except requests.exceptions.Timeout as errt:
+        return "A Timeout Error occurred:" + repr(errt)
+    except requests.exceptions.RequestException as err:
+            return "An Unknown Error occurred" + repr(err)
+    for result in myresult:
+        print(result)
+        try:
+            client.chat_scheduleMessage(channel=LEAVE_CHANNEL,post_at=leaveScheduleTime,text=f"Reminder:- \n{switchType(type=result['req_type_id'],result=result)}")
+        except SlackApiError as e:
+            logger.error("Error creating conversation {}",format(e))
+
 
 def birthday_schedule_message():
     try:
@@ -137,7 +158,11 @@ def birthday_schedule_message():
     except requests.exceptions.RequestException as err:
             return "An Unknown Error occurred" + repr(err)
     for result in myresult:
-        client.chat_scheduleMessage(channel=GENERAL_CHANNEL,post_at=birthdayScheduleTime,text=birthdayWish(result['name']))
+        try:
+            client.chat_scheduleMessage(channel=GENERAL_CHANNEL,post_at=birthdayScheduleTime,text=birthdayWish(result['name']))
+        except SlackApiError as e:
+            logger.error("Error creating conversation {}",format(e))
+
 
 def work_anniversary_schedule_message():
     try:
@@ -153,36 +178,21 @@ def work_anniversary_schedule_message():
         return "An Unknown Error occurred" + repr(err)
     for result in myresult:
         totalYear = currentYear - result['year']
-        client.chat_scheduleMessage(channel=GENERAL_CHANNEL,post_at=workAnniversaryScheduleTime,text=workAnniversaryWish(result['name'],totalYear))
-
-@app.route('/slack-bot/announcement',methods = ['POST'])
-def announcement_schedule_message():
-    content = request.get_json();
-    result = content[0]
-    client.chat_postMessage(channel=GENERAL_CHANNEL,text=f"<!channel> \n{result['description']}")
-    return content
-
-@app.route('/slack-bot/leave-request',methods = ['POST'])
-def leave_schedule_messages():
-    content = request.get_json();
-    myresult = content[0]
-    for result in myresult:
-        client.chat_postMessage(channel=LEAVE_CHANNEL,text=switchType(type=result['req_type_id'],result=result))
-    return content  
-
+        try:
+            client.chat_scheduleMessage(channel=GENERAL_CHANNEL,post_at=workAnniversaryScheduleTime,text=workAnniversaryWish(result['name'],totalYear))
+        except SlackApiError as e :
+            logger.error("Error creating conversation {}",format(e))
 
 
 # Schedule Function to run everyday
+schedule.every().day.at("12:25").do(leave_schedule_messages)
 schedule.every().day.at("05:25").do(birthday_schedule_message)
 schedule.every().day.at("05:25").do(work_anniversary_schedule_message)
 
-
-if(__name__== "__main__"):
-    app.run()
 
 # # To run script infinite time
 while True:
     # Checks whether a scheduled task
     # is pending to run or not
     schedule.run_pending()
-    tm.sleep(60)
+    tm.sleep(1)
